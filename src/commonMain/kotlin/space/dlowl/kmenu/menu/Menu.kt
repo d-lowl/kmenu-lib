@@ -1,14 +1,43 @@
 package space.dlowl.kmenu.menu
 
-data class Menu(val title: String, val options: List<MenuItem>? = null) {
-
+data class Menu(val title: String, val options: List<MenuItem>) {
+    private var optionMap: Map<String, MenuItemAction> = options.map { it.label to it.action }.toMap()
     private constructor(builder: Builder) : this(builder.title, builder.options)
 
-    fun getMenuOptions(): List<String> = options?.map { it.label } ?: listOf()
+    fun getMenuOptions(): List<String> = options.map { it.label }
 
-    fun getCommand(backend: Backend): String = when(options) {
-        null -> "echo -e \"\" | ${backend.command} -p '$title'"
-        else -> "echo -e \"${options.joinToString("\n")}\" | ${backend.command} -p '$title'"
+    fun getCommand(backend: Backend): String =
+        "echo -e \"${options.joinToString("\n")}\" | ${backend.command} -p '$title'"
+
+    fun main(args: Array<String>) {
+        when(args.size) {
+            0 -> {
+                getMenuOptions().forEach { println(it) }
+            }
+            else -> {
+                when(args[0]) {
+                    "-dmenu" -> {
+                        execute(Backend.DMENU)
+                    }
+                    "-rofi-dmenu" -> {
+                        execute(Backend.ROFI)
+                    }
+                    else -> {
+                        val selection = args[0]
+                        if (optionMap[selection] != null) {
+                            optionMap[selection]!!()
+                        } else {
+                            throw IllegalArgumentException("The selected item is not present")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun execute(backend: Backend) {
+        val command = getCommand(backend)
+        TODO("Execute command with the backend")
     }
 
     companion object {
@@ -17,12 +46,11 @@ data class Menu(val title: String, val options: List<MenuItem>? = null) {
 
     class Builder {
         var title = "kmenu"
-        var options: MutableList<MenuItem>? = null
+        var options: MutableList<MenuItem> = mutableListOf()
 
         inline fun option(block: MenuItem.Builder.() -> Unit) {
             val builder = MenuItem.Builder()
-            if (options == null) options = mutableListOf()
-            options!!.add(builder.apply(block).build())
+            options.add(builder.apply(block).build())
         }
 
         fun build(): Menu = Menu(this)

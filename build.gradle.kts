@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform") version "1.5.10"
+    id("maven-publish")
 }
 
 group = "space.dlowl"
