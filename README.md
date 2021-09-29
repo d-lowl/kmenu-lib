@@ -54,7 +54,7 @@ rofi -show script -modi "script:kmenu-script"
 ```
 
 ## Examples
-As an example for this library I've written
+For illustration purposes, I've written a small script to manipulate Network Manager connections: [rofi-nm-kmenu](https://github.com/d-lowl/rofi-nm-kmenu)
 
 ## Future
 There are a few things that I have not coded yet:
