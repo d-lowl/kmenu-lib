@@ -3,11 +3,7 @@ package space.dlowl.kmenu.utils
 import kotlinx.cinterop.*
 import platform.posix.*
 
-fun executeCommand(
-    command: String,
-    trim: Boolean = true,
-    redirectStderr: Boolean = true
-): String {
+actual fun executeCommand(command: String, trim: Boolean, redirectStderr: Boolean): String {
     val commandToExecute = if (redirectStderr) "$command 2>&1" else command
     val fp = popen(commandToExecute, "r") ?: error("Failed to run command: $command")
 
