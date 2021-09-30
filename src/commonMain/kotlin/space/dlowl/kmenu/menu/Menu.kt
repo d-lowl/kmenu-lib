@@ -47,7 +47,7 @@ data class Menu(
 
     fun execute(backend: Backend) {
         val command = getCommand(backend)
-        TODO("Execute command with the backend")
+        TODO("Execute command with a backend")
     }
 
     companion object {
