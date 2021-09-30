@@ -1,11 +1,16 @@
 package space.dlowl.kmenu.menu
 
-data class Menu(val title: String, val options: List<MenuItem>) {
+data class Menu(
+    val title: String,
+    val key: String? = null,
+    val options: List<MenuItem>,
+    val prefix: String = "",
+) {
     private var optionMap: Map<String, MenuItemAction> = options.map { it.key to it.action }.toMap()
-    private constructor(builder: Builder) : this(builder.title, builder.options)
+    private constructor(builder: Builder) : this(builder.title, builder.key, builder.options)
 
     protected fun getMenuOptions(): List<String> = options.map {
-        "${it.label}\\0info\\x1f${it.key}"
+        "${it.label}\\0info\\x1f$prefix${it.key}"
     }
 
     fun getRofiList(): List<String> =
@@ -28,9 +33,9 @@ data class Menu(val title: String, val options: List<MenuItem>) {
                         execute(Backend.ROFI)
                     }
                     else -> {
-                        val selection = args[0]
+                        val selection = args[0].split("/")[0]
                         if (optionMap[selection] != null) {
-                            optionMap[selection]!!()
+                            optionMap[selection]!!(args[0])
                         } else {
                             throw IllegalArgumentException("The selected item is not present")
                         }
@@ -51,11 +56,29 @@ data class Menu(val title: String, val options: List<MenuItem>) {
 
     class Builder {
         var title = "kmenu"
+        var key: String? = null
+        var prefix: String = ""
         var options: MutableList<MenuItem> = mutableListOf()
 
         inline fun option(block: MenuItem.Builder.() -> Unit) {
             val builder = MenuItem.Builder()
             options.add(builder.apply(block).build())
+        }
+
+        inline fun submenu(block: Builder.() -> Unit) {
+            val submenuBuilder = Builder()
+                .apply(block)
+
+            submenuBuilder.prefix = "$prefix${submenuBuilder.key}/"
+
+            val submenu = submenuBuilder.build()
+
+            checkNotNull(submenu.key)
+            options.add(MenuItem.Builder().apply {
+                label = submenu.title
+                key = submenu.key
+                action = MenuItem.submenuAction(submenu)
+            }.build())
         }
 
         fun build(): Menu = Menu(this)
