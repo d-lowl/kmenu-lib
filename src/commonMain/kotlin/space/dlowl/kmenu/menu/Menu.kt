@@ -10,7 +10,7 @@ data class Menu(
     private constructor(builder: Builder) : this(builder.title, builder.key, builder.options)
 
     protected fun getMenuOptions(): List<String> = options.map {
-        "${it.label}\\0info\\x1f$prefix${it.key}"
+        "${it.label}\u0000info\u001f$prefix${it.key}"
     }
 
     fun getRofiList(): List<String> =

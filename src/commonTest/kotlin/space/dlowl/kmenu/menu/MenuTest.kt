@@ -32,8 +32,8 @@ internal class MenuTest {
         assertEquals(
             menu.getRofiList(),
             listOf(
-                "top level option\\0info\\x1ftop",
-                "test subkmenu\\0info\\x1fsubkmenu",
+                "top level option\u0000info\u001ftop",
+                "test subkmenu\u0000info\u001Fsubkmenu",
             )
         )
         menu.main(arrayOf("top"))
