@@ -1,12 +1,17 @@
 package space.dlowl.kmenu.menu
 
 data class Menu(val title: String, val options: List<MenuItem>) {
-    private var optionMap: Map<String, MenuItemAction> = options.map { it.label to it.action }.toMap()
+    private var optionMap: Map<String, MenuItemAction> = options.map { it.key to it.action }.toMap()
     private constructor(builder: Builder) : this(builder.title, builder.options)
 
-    fun getMenuOptions(): List<String> = options.map { it.label }
+    protected fun getMenuOptions(): List<String> = options.map {
+        "${it.label}\\0info\\x1f${it.key}"
+    }
 
-    fun getCommand(backend: Backend): String =
+    fun getRofiList(): List<String> =
+        getMenuOptions()
+
+    protected fun getCommand(backend: Backend): String =
         "echo -e \"${options.joinToString("\n")}\" | ${backend.command} -p '$title'"
 
     fun main(args: Array<String>) {

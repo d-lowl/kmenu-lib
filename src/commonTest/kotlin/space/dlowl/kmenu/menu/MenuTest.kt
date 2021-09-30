@@ -1,31 +1,29 @@
 package space.dlowl.kmenu.menu
 
+import space.dlowl.kmenu.spy.Spy
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 internal class MenuTest {
     @Test
     fun testMenuBuilder() {
-        Menu.menu {
+        val simpleCall = Spy()
+
+        val menu = Menu.menu {
             title = "test kmenu"
             option {
-                label = "option 1"
-            }
-            option {
-                label = "option 2"
-                action = { "yey" }
+                label = "top level option"
+                key = "top"
+                action = simpleCall::call
             }
         }
-    }
 
-    @Test
-    fun getMenuOptions() {
-        assertEquals(Menu("test menu", listOf()).getMenuOptions(), listOf())
-        assertEquals(Menu("test menu", listOf(MenuItem("item1"))).getMenuOptions(), listOf("item1"))
-        assertEquals(Menu("test menu", listOf(MenuItem("item1"), MenuItem("item2"))).getMenuOptions(), listOf("item1", "item2"))
-    }
+        assertEquals(
+            menu.getRofiList(),
+            listOf("top level option\\0info\\x1ftop")
+        )
+        menu.main(arrayOf("top"))
+        assertEquals(simpleCall.callCount, 1)
 
-    @Test
-    fun getCommand() {
     }
 }
