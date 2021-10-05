@@ -6,9 +6,6 @@ plugins {
 group = "space.dlowl"
 version = "1.1-SNAPSHOT"
 
-val spaceUsername: String by project
-val spacePassword: String by project
-
 repositories {
     mavenCentral()
 }
@@ -45,15 +42,6 @@ kotlin {
                     tasks.withType<AbstractPublishToMaven>()
                         .matching { it.publication == targetPublication }
                         .configureEach { onlyIf { findProperty("isMainHost") == "true" } }
-                }
-            }
-        }
-        repositories {
-            maven {
-                url = uri("https://maven.pkg.jetbrains.space/dlowl/p/kmenu/kmenu-maven")
-                credentials {
-                    username = spaceUsername
-                    password = spacePassword
                 }
             }
         }
