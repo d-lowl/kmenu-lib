@@ -18,7 +18,7 @@ stages:          # List of stages for jobs, and their order of execution
 
 build:
   stage: build
-  script: gradle --build-cache assemble
+  script: ./gradlew --build-cache assemble
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
