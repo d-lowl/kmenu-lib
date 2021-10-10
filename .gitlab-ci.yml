@@ -1,4 +1,4 @@
-image: thowimmer/kotlin-native-mp:latest
+image: openjdk:16-jdk
 
 # Disable the Gradle daemon for Continuous Integration servers as correctness
 # is usually a priority over speed in CI environments. Using a fresh
