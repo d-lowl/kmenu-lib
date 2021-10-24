@@ -1,4 +1,4 @@
-image: openjdk:16-jdk
+image: dlowl/gradle-kotlin-multiplatform:7.1
 
 # Disable the Gradle daemon for Continuous Integration servers as correctness
 # is usually a priority over speed in CI environments. Using a fresh
@@ -18,7 +18,7 @@ stages:          # List of stages for jobs, and their order of execution
 
 gradle-assemble:
   stage: build
-  script: ./gradlew --build-cache assemble
+  script: gradle --build-cache assemble
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
@@ -28,7 +28,7 @@ gradle-assemble:
 
 gradle-check:   # This job runs in the test stage.
   stage: test    # It only starts when the job in the build stage completes successfully.
-  script: ./gradlew check
+  script: gradle check
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
