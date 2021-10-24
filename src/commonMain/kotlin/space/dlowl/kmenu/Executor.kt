@@ -11,6 +11,7 @@ object Executor {
         if (rofiInput.state == RofiState.INITIAL_CALL) {
             // Special case, the script is called for the first time
             displayMenu(menu)
+            return
         }
 
         val lastMenu = navigate(menu, rofiInput)
