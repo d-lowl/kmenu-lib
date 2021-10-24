@@ -1,51 +1,44 @@
 package space.dlowl.kmenu.menu
 
+import space.dlowl.kmenu.Executor
+import space.dlowl.kmenu.rofi.RofiInput
+import space.dlowl.kmenu.rofi.RofiSelection
+import space.dlowl.kmenu.rofi.getRofiInput
+
 data class Menu(
     val title: String,
     val key: String? = null,
     val options: List<MenuItem>,
     val prefix: String = "",
 ) {
-    private var optionMap: Map<String, MenuItemAction> = options.map { it.key to it.action }.toMap()
+    var optionMap: Map<String, MenuItem> = options.map { it.key to it }.toMap()
     private constructor(builder: Builder) : this(builder.title, builder.key, builder.options)
 
-    protected fun getMenuOptions(): List<String> = options.map {
-        "${it.label}\u0000info\u001f$prefix${it.key}"
-    }
+    fun getMenuOptions(prefix: List<RofiSelection>): List<String> = options.map { it.getRofiString(prefix) }
 
-    fun getRofiList(): List<String> =
-        getMenuOptions()
+    fun getSubmenu(key: String) = optionMap[key]!!.navigate()
+
+    fun executeEntry(key: String, rofiInput: RofiInput) = optionMap[key]!!.execute(rofiInput)
 
     protected fun getCommand(backend: Backend): String =
         "echo -e \"${options.joinToString("\n")}\" | ${backend.command} -p '$title'"
 
     fun main(args: Array<String>) {
-        when(args.size) {
-            0 -> {
-                getMenuOptions().forEach { println(it) }
+        when(if (args.isEmpty()) "" else args[0]) {
+            "-dmenu" -> {
+                executeLegacy(Backend.DMENU)
+            }
+            "-rofi-dmenu" -> {
+                executeLegacy(Backend.ROFI)
             }
             else -> {
-                when(args[0]) {
-                    "-dmenu" -> {
-                        execute(Backend.DMENU)
-                    }
-                    "-rofi-dmenu" -> {
-                        execute(Backend.ROFI)
-                    }
-                    else -> {
-                        val selection = args[0].split("/")[0]
-                        if (optionMap[selection] != null) {
-                            optionMap[selection]!!(args[0])
-                        } else {
-                            throw IllegalArgumentException("The selected item is not present")
-                        }
-                    }
-                }
+                val input = getRofiInput()
+                Executor.execute(this, input)
             }
         }
     }
 
-    fun execute(backend: Backend) {
+    fun executeLegacy(backend: Backend) {
         val command = getCommand(backend)
         TODO("Execute command with a backend")
     }
@@ -71,13 +64,13 @@ data class Menu(
 
             submenuBuilder.prefix = "$prefix${submenuBuilder.key}/"
 
-            val submenu = submenuBuilder.build()
+            val _submenu = submenuBuilder.build()
 
-            checkNotNull(submenu.key)
+            checkNotNull(_submenu.key)
             options.add(MenuItem.Builder().apply {
-                label = submenu.title
-                key = submenu.key
-                action = MenuItem.submenuAction(submenu)
+                label = _submenu.title
+                key = _submenu.key
+                submenu = _submenu
             }.build())
         }
 

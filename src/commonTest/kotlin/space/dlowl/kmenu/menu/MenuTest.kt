@@ -15,7 +15,7 @@ internal class MenuTest {
             option {
                 label = "top level option"
                 key = "top"
-                action = simpleCall::call
+                func = simpleCall::call
             }
 
             submenu {
@@ -24,23 +24,35 @@ internal class MenuTest {
                 option {
                     label = "top level option in the submenu"
                     key = "top"
-                    action = submenuCall::call
+                    func = submenuCall::call
                 }
             }
         }
 
+        assertEquals(menu.title, "test kmenu")
+        assertEquals(menu.getSubmenu("subkmenu").title, "test subkmenu")
+        assertEquals(menu.optionMap["top"]?.func, simpleCall::call)
+
+
         assertEquals(
-            menu.getRofiList(),
+            menu.getMenuOptions(listOf()),
             listOf(
-                "top level option\u0000info\u001ftop",
-                "test subkmenu\u0000info\u001Fsubkmenu",
+                "top level option\u0000info\u001F[{\"type\":\"ENTRY\",\"value\":\"top\"}]",
+                "test subkmenu\u0000info\u001F[{\"type\":\"SUBMENU\",\"value\":\"subkmenu\"}]",
             )
         )
-        menu.main(arrayOf("top"))
-        assertEquals(simpleCall.callCount, 1)
 
-        menu.main(arrayOf("subkmenu/top"))
-        assertEquals(submenuCall.callCount, 1)
+        val prefix = listOf(menu.optionMap["subkmenu"]!!.selection)
+        val submenu = menu.getSubmenu("subkmenu")
 
+        assertEquals(submenu.title, "test subkmenu")
+        assertEquals(submenu.optionMap["top"]?.func, submenuCall::call)
+
+        assertEquals(
+            submenu.getMenuOptions(prefix),
+            listOf(
+                "top level option in the submenu\u0000info\u001F[{\"type\":\"SUBMENU\",\"value\":\"subkmenu\"},{\"type\":\"ENTRY\",\"value\":\"top\"}]",
+            )
+        )
     }
 }
