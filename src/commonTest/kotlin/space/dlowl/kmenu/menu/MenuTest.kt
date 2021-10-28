@@ -51,7 +51,7 @@ internal class MenuTest {
         assertEquals(
             submenu.getMenuOptions(prefix),
             listOf(
-                "top level option in the submenu\u0000info\u001F[{\"type\":\"SUBMENU\",\"value\":\"subkmenu\"},{\"type\":\"ENTRY\",\"value\":\"top\"}]\u001fmeta\u001f\u001fnonselectable\u001ffalse",
+                "top level option in the submenu\u0000info\u001F[{\"type\":\"SUBMENU\",\"value\":\"subkmenu\"},{\"type\":\"ENTRY\",\"value\":\"top\"}]\u001fmeta\u001f\u001fnonselectable\u001fgifalse",
             )
         )
     }
