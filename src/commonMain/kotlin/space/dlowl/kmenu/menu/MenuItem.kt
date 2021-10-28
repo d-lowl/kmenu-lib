@@ -12,10 +12,17 @@ import space.dlowl.kmenu.rofi.RofiSelectionType
  */
 typealias MenuItemFunc = (RofiInput) -> Unit
 
-data class MenuItem(val key: String, val label: String, val func: MenuItemFunc?, val submenu: Menu?) {
-    constructor(key: String, label: String, func: MenuItemFunc) : this(key, label, func, null)
+data class MenuItem(
+    val key: String,
+    val label: String,
+    val nonselectable: Boolean,
+    val meta: String,
+    val func: MenuItemFunc?,
+    val submenu: Menu?
+) {
+    constructor(key: String, label: String, func: MenuItemFunc) : this(key, label, false, "", func, null)
 
-    constructor(key: String, label: String, submenu: Menu) : this(key, label, null, submenu)
+    constructor(key: String, label: String, submenu: Menu) : this(key, label, false, "", null, submenu)
 
     fun execute(input: RofiInput) {
         if (func == null) throw Exception("This menu item is not executable")
@@ -45,9 +52,10 @@ data class MenuItem(val key: String, val label: String, val func: MenuItemFunc?,
         Json.encodeToString(ListSerializer(RofiSelection.serializer()), getPathTo(prefix))
 
     fun getRofiString(prefix: List<RofiSelection>): String =
-        "${label}\u0000info\u001f${getPathToString(prefix)}"
+        "${label}\u0000info\u001f${getPathToString(prefix)}\u001fmeta\u001f${meta}\u001fnonselectable\u001f${nonselectable}"
 
-    private constructor(builder: Builder) : this(builder.key!!, builder.label!!, builder.func, builder.submenu)
+    private constructor(builder: Builder) :
+            this(builder.key!!, builder.label!!, builder.nonselectable, builder.meta, builder.func, builder.submenu)
 
     companion object {
         fun defaultAction(label: String): MenuItemFunc = { }
@@ -61,9 +69,14 @@ data class MenuItem(val key: String, val label: String, val func: MenuItemFunc?,
         var key: String? = null
         var label: String? = null
         var func: MenuItemFunc? = null
+        var nonselectable: Boolean = false
+        var meta: String = ""
         var submenu: Menu? = null
 
         fun build(): MenuItem {
+            if (nonselectable) {
+                key = ""
+            }
             checkNotNull(key)
             checkNotNull(label)
             return MenuItem(this)
