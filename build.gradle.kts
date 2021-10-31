@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "space.dlowl"
-version = "1.1-SNAPSHOT"
+version = "1.1"
 
 var gitlabName: String? = null
 var gitlabValue: String? = null
