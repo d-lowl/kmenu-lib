@@ -114,3 +114,5 @@ There are a few things that I have not coded yet:
 - [ ] Support for [row options in rofi](https://www.mankier.com/5/rofi-script#Parsing_row_options)
 - [ ] Test with Kotlin JVM (only tested with Kotlin Native so far)
 - [ ] Test with kscript
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F2F16RQKM)
